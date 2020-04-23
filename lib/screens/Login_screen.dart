@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:new_app/constants.dart';
 import 'package:new_app/screens/registration_screen.dart';
+import 'package:new_app/services/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -14,10 +16,24 @@ class _LoginScreenState extends State<LoginScreen>
   Animation<Color> animation1;
   Animation<Color> animation2;
   Widget _mywidget;
+  TextEditingController _email,_pass;
+
+  Future<void> _signin(BuildContext context,String email,String pass) async{
+    try{
+      final auth= Provider.of<FirebaseAuthService>(context,listen: false);
+      final user = await auth.signIn(email, pass);
+    }
+    catch(e){
+      print(e);
+    }
+    //return user==null?null:user;
+  }
 
   @override
   void initState() {
     super.initState();
+    _email=TextEditingController(text: "");
+    _pass= TextEditingController(text:"");
     _mywidget = animatedWidget();
     _controller =
         AnimationController(vsync: this, duration: Duration(seconds: 3));
@@ -39,6 +55,8 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _controller.dispose();
+    _email.dispose();
+    _pass.dispose();
     super.dispose();
   }
 
@@ -64,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen>
                   padding: EdgeInsets.only(top: 10),
                 ),
                 TextField(
+                  controller: _email,
                   keyboardType: TextInputType.emailAddress,
                   style: ktextstyle2.copyWith(fontSize: 20, letterSpacing: 1.5),
                   decoration: InputDecoration(
@@ -103,12 +122,13 @@ class _LoginScreenState extends State<LoginScreen>
                   padding: EdgeInsets.only(top: 20),
                 ),
                 TextField(
+                  controller: _pass,
                   obscureText: true,
                   style: ktextstyle2.copyWith(fontSize: 20, letterSpacing: 1.5),
                   decoration: InputDecoration(
                     labelText: "Password",
                     prefixIcon: Icon(
-                      Icons.email,
+                      Icons.vpn_key,
                       color: Color.fromRGBO(6, 157, 126, 100),
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -153,13 +173,15 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     RawMaterialButton(
                       elevation: 0,
-                      onPressed: () {
+                      onPressed: () async{
                         setState(() {
                           _mywidget = SpinKitCircle(
                             color: Color.fromRGBO(126, 41, 130, 100),
                             duration: Duration(seconds: 1),
                           );
                         });
+                        await _signin(context, _email.text, _pass.text);
+                    
                       },
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,

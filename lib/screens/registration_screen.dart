@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:new_app/screens/Login_screen.dart';
+import 'package:new_app/services/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import '../constants.dart';
 
@@ -15,9 +16,24 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   Animation<Color> animation1;
   Animation<Color> animation2;
   Widget _mywidget;
+  TextEditingController _email,_pass;
+  
+  Future<void> _signup(BuildContext context,String email,String pass) async{
+    try{
+      print(pass);
+      final auth= Provider.of<FirebaseAuthService>(context,listen: false);
+      final user = await auth.createUser(email,pass);
+      print('uid: ${user.uid}');
+    }
+    catch(e){
+      print(e);
+    }
+  }
 
   @override
   void initState() {
+    _email=TextEditingController(text: "");
+    _pass= TextEditingController(text:"");
     super.initState();
     _mywidget = animatedWidget();
     _controller =
@@ -40,6 +56,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   @override
   void dispose() {
     _controller.dispose();
+    _email.dispose();
+    _pass.dispose();
     super.dispose();
   }
 
@@ -65,6 +83,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   padding: EdgeInsets.only(top: 10),
                 ),
                 TextField(
+                  controller: _email,
                   keyboardType: TextInputType.emailAddress,
                   style: ktextstyle2.copyWith(fontSize: 20, letterSpacing: 1.5),
                   decoration: InputDecoration(
@@ -104,6 +123,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   padding: EdgeInsets.only(top: 20),
                 ),
                 TextField(
+                  controller: _pass,
                   obscureText: true,
                   style: ktextstyle2.copyWith(fontSize: 20, letterSpacing: 1.5),
                   decoration: InputDecoration(
@@ -154,17 +174,15 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     ),
                     RawMaterialButton(
                       elevation: 0,
-                      onPressed: () {
+                      onPressed: () async {
                         setState(() {
                           _mywidget = SpinKitCircle(
                             color: Color.fromRGBO(126, 41, 130, 100),
                             duration: Duration(seconds: 1),
                           );
                         });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()));
+
+                         _signup(context, _email.text, _pass.text);
                       },
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
