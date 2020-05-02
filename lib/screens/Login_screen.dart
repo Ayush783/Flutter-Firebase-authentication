@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen>
   Future<void> _signin(BuildContext context,String email,String pass) async{
     try{
       final auth= Provider.of<FirebaseAuthService>(context,listen: false);
-      final user = await auth.signIn(email, pass);
+      await auth.signIn(email, pass);
     }
     catch(e){
       print(e);
