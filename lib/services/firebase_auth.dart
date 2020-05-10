@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:new_app/screens/Login_screen.dart';
 
 class User{
   const User({@required this.uid});
@@ -13,9 +14,11 @@ class FirebaseAuthService{
     return user== null?null:User(uid: user.uid);
   }
   
-  Future<User> createUser(String email,String pass) async{
+  Future<void> createUser(BuildContext context,String email,String pass) async{
     final createResult = await _auth.createUserWithEmailAndPassword(email: email, password: pass);
-    return _user(createResult.user);
+    if(createResult!=null){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+    }
   }
   
   Stream<User> get onAuthStateChanged{

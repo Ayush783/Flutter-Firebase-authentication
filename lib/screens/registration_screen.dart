@@ -22,8 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     try{
       print(pass);
       final auth= Provider.of<FirebaseAuthService>(context,listen: false);
-      final user = await auth.createUser(email,pass);
-      print('uid: ${user.uid}');
+      await auth.createUser(context,email,pass);
     }
     catch(e){
       print(e);

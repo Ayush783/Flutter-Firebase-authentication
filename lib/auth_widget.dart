@@ -8,17 +8,28 @@ import 'package:provider/provider.dart';
 class AuthWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final authservice=Provider.of<FirebaseAuthService>(context,listen: false);
+    final authservice =
+        Provider.of<FirebaseAuthService>(context, listen: false);
     return StreamBuilder<User>(
       stream: authservice.onAuthStateChanged,
-      builder: (context,snapshot){
-        if(snapshot.connectionState==ConnectionState.active){
-          final user=snapshot.data;
-          return user== null?LoginScreen():HomeScreen();
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          final user = snapshot.data;
+          if (user != null) {
+           return Provider<User>.value(
+              value: user,
+              child: HomeScreen(),
+            );
+          }
+          return LoginScreen();
         }
-        return Scaffold(body: Center(
-          child: SpinKitCircle(color: Colors.blue,),
-        ),);
+        return Scaffold(
+          body: Center(
+            child: SpinKitCircle(
+              color: Colors.blue,
+            ),
+          ),
+        );
       },
     );
   }
